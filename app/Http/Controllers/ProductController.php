@@ -4,8 +4,7 @@ namespace App\Http\Controllers;
 
 use Exception;
 use App\Models\Product;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Storage;
 use App\Http\Requests\StoreProductRequest;
 use App\Http\Requests\UpdateProductRequest;
 
@@ -34,22 +33,16 @@ class ProductController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(StoreProductRequest $request)
     {
         try {
-            $validator = Validator::make($request->all(),  [
-                'name' => ['required', 'string']
-            ]);
+          
 
-            if ($validator->fails()) {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Terjadi kesalahan dengan validasi',
-                    'error' => $validator->errors()
-                ]);
+            $validated = $request->validated();
+
+            if ($request->hasFile('image')) {
+                $validated['image'] = $request->file('image')->store('public/product');
             }
-
-            $validated = $validator->validated();
 
             Product::create($validated);
 
@@ -70,28 +63,36 @@ class ProductController extends Controller
      */
     public function show(Product $product)
     {
-        //
+        try {
+            return response()->json([
+                'success' => true,
+                'data' => $product
+            ]);
+        } catch(Exception $error) {
+            return response()->json([
+                'success' => false,
+                'message' => $error->getMessage()
+            ], 500);
+        }
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Product $product)
+    public function update(UpdateProductRequest $request, Product $product)
     {
         try {
-            $validator = Validator::make($request->all(),  [
-                'name' => ['required', 'string']
-            ]);
+          
+            $validated = $request->validated();
 
-            if ($validator->fails()) {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Terjadi kesalahan dengan validasi',
-                    'error' => $validator->errors()
-                ]);
+            
+            if ($request->hasFile('image')) {
+                if ($product->image) {   
+                    Storage::delete($product->image);
+                }
+    
+                $validated['image'] = $request->file('image')->store('public/product');
             }
-
-            $validated = $validator->validated();
 
             $product->update($validated);
 

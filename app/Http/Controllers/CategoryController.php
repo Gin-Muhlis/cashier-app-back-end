@@ -6,6 +6,8 @@ use Exception;
 use App\Models\Category;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
+use App\Http\Requests\StoreCategoryRequest;
+use App\Http\Requests\UpdateCategoryRequest;
 
 class CategoryController extends Controller
 {
@@ -32,22 +34,10 @@ class CategoryController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(StoreCategoryRequest $request)
     {
         try {
-            $validator = Validator::make($request->all(),  [
-                'name' => ['required', 'string']
-            ]);
-
-            if ($validator->fails()) {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Terjadi kesalahan dengan validasi',
-                    'error' => $validator->errors()
-                ]);
-            }
-
-            $validated = $validator->validated();
+            $validated = $request->validated();
 
             Category::create($validated);
 
@@ -84,22 +74,10 @@ class CategoryController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Category $category)
+    public function update(UpdateCategoryRequest $request, Category $category)
     {
         try {
-            $validator = Validator::make($request->all(),  [
-                'name' => ['required', 'string']
-            ]);
-
-            if ($validator->fails()) {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Terjadi kesalahan dengan validasi',
-                    'error' => $validator->errors()
-                ]);
-            }
-
-            $validated = $validator->validated();
+            $validated = $request->validated();
 
             $category->update($validated);
 

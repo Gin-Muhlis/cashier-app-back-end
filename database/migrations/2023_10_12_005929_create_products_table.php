@@ -14,6 +14,11 @@ return new class extends Migration
         Schema::create('products', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->unsignedBigInteger('category_id')->nullable();
+            $table->string('name');
+            $table->integer('stock');
+            $table->double('price');
+            $table->string('tag');
+            $table->string('image');
             $table->timestamps();
         });
     }
