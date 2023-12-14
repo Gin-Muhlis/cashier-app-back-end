@@ -6,17 +6,12 @@ use App\Models\Scopes\Searchable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
-class Category extends Model
+class Customer extends Model
 {
     use HasFactory;
     use Searchable;
 
-    protected $fillable = ['name'];
+    protected $fillable = ['name', 'email', 'phone', 'address'];
 
     protected $searchableFields = ['*'];
-
-    public function types()
-    {
-        return $this->hasMany(Type::class);
-    }
 }

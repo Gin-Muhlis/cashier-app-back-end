@@ -6,17 +6,22 @@ use App\Models\Scopes\Searchable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
-class Category extends Model
+class Type extends Model
 {
     use HasFactory;
     use Searchable;
 
-    protected $fillable = ['name'];
+    protected $fillable = ['type_name', 'category_id'];
 
     protected $searchableFields = ['*'];
 
-    public function types()
+    public function category()
     {
-        return $this->hasMany(Type::class);
+        return $this->belongsTo(Category::class);
+    }
+
+    public function menus()
+    {
+        return $this->hasMany(Menu::class);
     }
 }

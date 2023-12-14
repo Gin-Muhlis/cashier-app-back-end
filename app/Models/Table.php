@@ -6,17 +6,17 @@ use App\Models\Scopes\Searchable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
-class Category extends Model
+class Table extends Model
 {
     use HasFactory;
     use Searchable;
 
-    protected $fillable = ['name'];
+    protected $fillable = ['table_number', 'capacity', 'status'];
 
     protected $searchableFields = ['*'];
 
-    public function types()
+    public function orders()
     {
-        return $this->hasMany(Type::class);
+        return $this->hasMany(Order::class);
     }
 }
