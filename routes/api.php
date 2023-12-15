@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\CategoryController;
 use App\Http\Controllers\Api\CategoryTypesController;
 use App\Http\Controllers\Api\CustomerController;
@@ -29,87 +30,92 @@ use Illuminate\Support\Facades\Route;
 |
  */
 
-Route::name('api.')->group(function () {
-	Route::apiResource('categories', CategoryController::class);
+Route::post('/login', [AuthController::class, 'login']);
 
-	// Category Types
-	Route::get('/categories/{category}/types', [
-		CategoryTypesController::class,
-		'index',
-	])->name('categories.types.index');
-	Route::post('/categories/{category}/types', [
-		CategoryTypesController::class,
-		'store',
-	])->name('categories.types.store');
+Route::name('api.')
+	->middleware('auth:api')
+	->group(function () {
+		Route::post('/logout', [AuthController::class, 'logout']);
+		Route::apiResource('categories', CategoryController::class);
 
-	Route::apiResource('customers', CustomerController::class);
+		// Category Types
+		Route::get('/categories/{category}/types', [
+			CategoryTypesController::class,
+			'index',
+		])->name('categories.types.index');
+		Route::post('/categories/{category}/types', [
+			CategoryTypesController::class,
+			'store',
+		])->name('categories.types.store');
 
-	Route::apiResource('menus', MenuController::class);
+		Route::apiResource('customers', CustomerController::class);
 
-	// Menu Transaction Details
-	Route::get('/menus/{menu}/transaction-details', [
-		MenuTransactionDetailsController::class,
-		'index',
-	])->name('menus.transaction-details.index');
-	Route::post('/menus/{menu}/transaction-details', [
-		MenuTransactionDetailsController::class,
-		'store',
-	])->name('menus.transaction-details.store');
+		Route::apiResource('menus', MenuController::class);
 
-	Route::apiResource('orders', OrderController::class);
+		// Menu Transaction Details
+		Route::get('/menus/{menu}/transaction-details', [
+			MenuTransactionDetailsController::class,
+			'index',
+		])->name('menus.transaction-details.index');
+		Route::post('/menus/{menu}/transaction-details', [
+			MenuTransactionDetailsController::class,
+			'store',
+		])->name('menus.transaction-details.store');
 
-	Route::apiResource('stocks', StockController::class);
+		Route::apiResource('orders', OrderController::class);
 
-	Route::apiResource('tables', TableController::class);
+		Route::apiResource('stocks', StockController::class);
 
-	// Table Orders
-	Route::get('/tables/{table}/orders', [
-		TableOrdersController::class,
-		'index',
-	])->name('tables.orders.index');
-	Route::post('/tables/{table}/orders', [
-		TableOrdersController::class,
-		'store',
-	])->name('tables.orders.store');
+		Route::apiResource('tables', TableController::class);
 
-	Route::apiResource('transactions', TransactionController::class);
+		// Table Orders
+		Route::get('/tables/{table}/orders', [
+			TableOrdersController::class,
+			'index',
+		])->name('tables.orders.index');
+		Route::post('/tables/{table}/orders', [
+			TableOrdersController::class,
+			'store',
+		])->name('tables.orders.store');
 
-	// Transaction Transaction Details
-	Route::get('/transactions/{transaction}/transaction-details', [
-		TransactionTransactionDetailsController::class,
-		'index',
-	])->name('transactions.transaction-details.index');
-	Route::post('/transactions/{transaction}/transaction-details', [
-		TransactionTransactionDetailsController::class,
-		'store',
-	])->name('transactions.transaction-details.store');
+		Route::apiResource('transactions', TransactionController::class);
 
-	Route::apiResource(
-		'transaction-details',
-		TransactionDetailController::class
-	);
+		// Transaction Transaction Details
+		Route::get('/transactions/{transaction}/transaction-details', [
+			TransactionTransactionDetailsController::class,
+			'index',
+		])->name('transactions.transaction-details.index');
+		Route::post('/transactions/{transaction}/transaction-details', [
+			TransactionTransactionDetailsController::class,
+			'store',
+		])->name('transactions.transaction-details.store');
 
-	Route::apiResource('types', TypeController::class);
+		Route::apiResource(
+			'transaction-details',
+			TransactionDetailController::class
+		);
 
-	// Type Menus
-	Route::get('/types/{type}/menus', [
-		TypeMenusController::class,
-		'index',
-	])->name('types.menus.index');
-	Route::post('/types/{type}/menus', [
-		TypeMenusController::class,
-		'store',
-	])->name('types.menus.store');
+		Route::apiResource('types', TypeController::class);
 
-	Route::apiResource('users', UserController::class);
+		// Type Menus
+		Route::get('/types/{type}/menus', [
+			TypeMenusController::class,
+			'index',
+		])->name('types.menus.index');
+		Route::post('/types/{type}/menus', [
+			TypeMenusController::class,
+			'store',
+		])->name('types.menus.store');
 
-	// User Transactions
-	Route::get('/users/{user}/transactions', [
-		UserTransactionsController::class,
-		'index',
-	])->name('users.transactions.index');
-	Route::post('/users/{user}/transactions', [
-		UserTransactionsController::class,
-		'store',
-	])->name('users.transactions.store');
-});
+		Route::apiResource('users', UserController::class);
+
+		// User Transactions
+		Route::get('/users/{user}/transactions', [
+			UserTransactionsController::class,
+			'index',
+		])->name('users.transactions.index');
+		Route::post('/users/{user}/transactions', [
+			UserTransactionsController::class,
+			'store',
+		])->name('users.transactions.store');
+	});
