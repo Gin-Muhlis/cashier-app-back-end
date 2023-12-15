@@ -2,71 +2,63 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Http\Controllers\Controller;
+use App\Http\Requests\TransactionStoreRequest;
+use App\Http\Requests\TransactionUpdateRequest;
+use App\Http\Resources\TransactionCollection;
+use App\Http\Resources\TransactionResource;
 use App\Models\Transaction;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
-use App\Http\Controllers\Controller;
-use App\Http\Resources\TransactionResource;
-use App\Http\Resources\TransactionCollection;
-use App\Http\Requests\TransactionStoreRequest;
-use App\Http\Requests\TransactionUpdateRequest;
 
-class TransactionController extends Controller
-{
-    public function index(Request $request): TransactionCollection
-    {
-        $this->authorize('view-any', Transaction::class);
+class TransactionController extends Controller {
+	public function index(Request $request): TransactionCollection {
 
-        $search = $request->get('search', '');
+		$search = $request->get('search', '');
 
-        $transactions = Transaction::search($search)
-            ->latest()
-            ->paginate();
+		$transactions = Transaction::search($search)
+			->latest()
+			->paginate();
 
-        return new TransactionCollection($transactions);
-    }
+		return new TransactionCollection($transactions);
+	}
 
-    public function store(TransactionStoreRequest $request): TransactionResource
-    {
-        $this->authorize('create', Transaction::class);
+	public function store(TransactionStoreRequest $request): TransactionResource {
 
-        $validated = $request->validated();
+		$validated = $request->validated();
 
-        $transaction = Transaction::create($validated);
+		$transaction = Transaction::create($validated);
 
-        return new TransactionResource($transaction);
-    }
+		return new TransactionResource($transaction);
+	}
 
-    public function show(
-        Request $request,
-        Transaction $transaction
-    ): TransactionResource {
-        $this->authorize('view', $transaction);
+	public function show(
+		Request $request,
+		Transaction $transaction
+	): TransactionResource {
 
-        return new TransactionResource($transaction);
-    }
+		return new TransactionResource($transaction);
+	}
 
-    public function update(
-        TransactionUpdateRequest $request,
-        Transaction $transaction
-    ): TransactionResource {
-        $this->authorize('update', $transaction);
+	public function update(
+		TransactionUpdateRequest $request,
+		Transaction $transaction
+	): TransactionResource {
 
-        $validated = $request->validated();
+		$validated = $request->validated();
 
-        $transaction->update($validated);
+		$transaction->update($validated);
 
-        return new TransactionResource($transaction);
-    }
+		return new TransactionResource($transaction);
+	}
 
-    public function destroy(
-        Request $request,
-        Transaction $transaction
-    ): Response {
-        $this->authorize('delete', $transaction);
+	public function destroy(
+		Request $request,
+		Transaction $transaction
+	): Response {
 
-        $transaction->delete();
+		$transaction->delete();
 
-        return response()->noContent();
-    }
+		return response()->noContent();
+	}
 }

@@ -2,10 +2,9 @@
 
 namespace App\Http\Requests;
 
-use Illuminate\Validation\Rule;
 use Illuminate\Foundation\Http\FormRequest;
 
-class UserStoreRequest extends FormRequest
+class RoleUpdateRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -22,11 +21,6 @@ class UserStoreRequest extends FormRequest
     {
         return [
             'name' => ['required', 'max:255', 'string'],
-            'address' => ['required', 'max:255', 'string'],
-            'email' => ['required', 'unique:users,email', 'email'],
-            'phone' => ['required', 'max:255', 'string'],
-            'password' => ['required'],
-            'role_id' => ['required', 'exists:roles,id'],
         ];
     }
 }

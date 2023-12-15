@@ -13,8 +13,6 @@ use Illuminate\Http\Response;
 
 class CategoryController extends Controller {
 	public function index(Request $request) {
-		dd($request->user()->hasPermissionTo('list categories'));
-		$this->authorize('view-any', Categgory::class);
 		$search = $request->get('search', '');
 
 		$categories = Category::all();
@@ -28,7 +26,6 @@ class CategoryController extends Controller {
 	}
 
 	public function store(CategoryStoreRequest $request) {
-		$this->authorize('create', Categgory::class);
 		$validated = $request->validated();
 
 		$category = Category::create($validated);
@@ -40,7 +37,6 @@ class CategoryController extends Controller {
 	}
 
 	public function show(Request $request, Category $category): CategoryResource {
-		$this->authorize('view', $category);
 		return new CategoryResource($category);
 	}
 
@@ -48,7 +44,6 @@ class CategoryController extends Controller {
 		CategoryUpdateRequest $request,
 		Category $category
 	): CategoryResource {
-		$this->authorize('update', $category);
 
 		$validated = $request->validated();
 
@@ -58,7 +53,6 @@ class CategoryController extends Controller {
 	}
 
 	public function destroy(Request $request, Category $category): Response {
-		$this->authorize('delete', $category);
 
 		$category->delete();
 

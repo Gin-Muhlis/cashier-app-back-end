@@ -2,81 +2,70 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Http\Controllers\Controller;
+use App\Http\Requests\MenuStoreRequest;
+use App\Http\Requests\MenuUpdateRequest;
+use App\Http\Resources\MenuCollection;
+use App\Http\Resources\MenuResource;
 use App\Models\Menu;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
-use App\Http\Resources\MenuResource;
-use App\Http\Controllers\Controller;
-use App\Http\Resources\MenuCollection;
-use App\Http\Requests\MenuStoreRequest;
 use Illuminate\Support\Facades\Storage;
-use App\Http\Requests\MenuUpdateRequest;
 
-class MenuController extends Controller
-{
-    public function index(Request $request): MenuCollection
-    {
-        $this->authorize('view-any', Menu::class);
+class MenuController extends Controller {
+	public function index(Request $request): MenuCollection {
 
-        $search = $request->get('search', '');
+		$search = $request->get('search', '');
 
-        $menus = Menu::search($search)
-            ->latest()
-            ->paginate();
+		$menus = Menu::search($search)
+			->latest()
+			->paginate();
 
-        return new MenuCollection($menus);
-    }
+		return new MenuCollection($menus);
+	}
 
-    public function store(MenuStoreRequest $request): MenuResource
-    {
-        $this->authorize('create', Menu::class);
+	public function store(MenuStoreRequest $request): MenuResource {
 
-        $validated = $request->validated();
-        if ($request->hasFile('image')) {
-            $validated['image'] = $request->file('image')->store('public');
-        }
+		$validated = $request->validated();
+		if ($request->hasFile('image')) {
+			$validated['image'] = $request->file('image')->store('public');
+		}
 
-        $menu = Menu::create($validated);
+		$menu = Menu::create($validated);
 
-        return new MenuResource($menu);
-    }
+		return new MenuResource($menu);
+	}
 
-    public function show(Request $request, Menu $menu): MenuResource
-    {
-        $this->authorize('view', $menu);
+	public function show(Request $request, Menu $menu): MenuResource {
 
-        return new MenuResource($menu);
-    }
+		return new MenuResource($menu);
+	}
 
-    public function update(MenuUpdateRequest $request, Menu $menu): MenuResource
-    {
-        $this->authorize('update', $menu);
+	public function update(MenuUpdateRequest $request, Menu $menu): MenuResource {
 
-        $validated = $request->validated();
+		$validated = $request->validated();
 
-        if ($request->hasFile('image')) {
-            if ($menu->image) {
-                Storage::delete($menu->image);
-            }
+		if ($request->hasFile('image')) {
+			if ($menu->image) {
+				Storage::delete($menu->image);
+			}
 
-            $validated['image'] = $request->file('image')->store('public');
-        }
+			$validated['image'] = $request->file('image')->store('public');
+		}
 
-        $menu->update($validated);
+		$menu->update($validated);
 
-        return new MenuResource($menu);
-    }
+		return new MenuResource($menu);
+	}
 
-    public function destroy(Request $request, Menu $menu): Response
-    {
-        $this->authorize('delete', $menu);
+	public function destroy(Request $request, Menu $menu): Response {
 
-        if ($menu->image) {
-            Storage::delete($menu->image);
-        }
+		if ($menu->image) {
+			Storage::delete($menu->image);
+		}
 
-        $menu->delete();
+		$menu->delete();
 
-        return response()->noContent();
-    }
+		return response()->noContent();
+	}
 }

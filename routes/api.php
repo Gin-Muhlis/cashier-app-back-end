@@ -2,21 +2,16 @@
 
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\CategoryController;
-use App\Http\Controllers\Api\CategoryTypesController;
 use App\Http\Controllers\Api\CustomerController;
 use App\Http\Controllers\Api\MenuController;
-use App\Http\Controllers\Api\MenuTransactionDetailsController;
 use App\Http\Controllers\Api\OrderController;
+use App\Http\Controllers\Api\RoleController;
 use App\Http\Controllers\Api\StockController;
 use App\Http\Controllers\Api\TableController;
-use App\Http\Controllers\Api\TableOrdersController;
 use App\Http\Controllers\Api\TransactionController;
 use App\Http\Controllers\Api\TransactionDetailController;
-use App\Http\Controllers\Api\TransactionTransactionDetailsController;
 use App\Http\Controllers\Api\TypeController;
-use App\Http\Controllers\Api\TypeMenusController;
 use App\Http\Controllers\Api\UserController;
-use App\Http\Controllers\Api\UserTransactionsController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -32,90 +27,56 @@ use Illuminate\Support\Facades\Route;
 
 Route::post('/login', [AuthController::class, 'login']);
 
-Route::name('api.')
-	->middleware('auth:api')
+Route::middleware(['auth:api', 'role:admin'])
 	->group(function () {
-		Route::post('/logout', [AuthController::class, 'logout']);
-		Route::apiResource('categories', CategoryController::class);
+		// kategori
+		Route::apiResource('/categories', CategoryController::class);
+		// menu
+		Route::post('/menus', [MenuController::class, 'store']);
+		Route::put('/menus/{menu}', [MenuController::class, 'update']);
+		Route::delete('/menus/{menu}', [MenuController::class, 'delete']);
+		// pelanggan
+		Route::post('/customers', [CustomerController::class, 'store']);
+		Route::put('/customers/{customer}', [CustomerController::class, 'update']);
+		Route::delete('/customers/{customer}', [CustomerController::class, 'delete']);
 
-		// Category Types
-		Route::get('/categories/{category}/types', [
-			CategoryTypesController::class,
-			'index',
-		])->name('categories.types.index');
-		Route::post('/categories/{category}/types', [
-			CategoryTypesController::class,
-			'store',
-		])->name('categories.types.store');
-
-		Route::apiResource('customers', CustomerController::class);
-
-		Route::apiResource('menus', MenuController::class);
-
-		// Menu Transaction Details
-		Route::get('/menus/{menu}/transaction-details', [
-			MenuTransactionDetailsController::class,
-			'index',
-		])->name('menus.transaction-details.index');
-		Route::post('/menus/{menu}/transaction-details', [
-			MenuTransactionDetailsController::class,
-			'store',
-		])->name('menus.transaction-details.store');
-
-		Route::apiResource('orders', OrderController::class);
-
+		// stok
 		Route::apiResource('stocks', StockController::class);
+		// meja
+		Route::post('/tables', [TableController::class, 'store']);
+		Route::put('/tables/{table}', [TableController::class, 'update']);
+		Route::delete('/tables/{table}', [TableController::class, 'delete']);
+		// jenis
+		Route::apiResource('types', TypeController::class);
+		// user
+		Route::apiResource('users', UserController::class);
+		// role
+		Route::apiResource('roles', RoleController::class);
+	});
 
-		Route::apiResource('tables', TableController::class);
-
-		// Table Orders
-		Route::get('/tables/{table}/orders', [
-			TableOrdersController::class,
-			'index',
-		])->name('tables.orders.index');
-		Route::post('/tables/{table}/orders', [
-			TableOrdersController::class,
-			'store',
-		])->name('tables.orders.store');
-
+Route::middleware(['auth:api', 'role:admin,kasir'])
+	->group(function () {
+		// menu
+		Route::get('/menus', [MenuController::class, 'index']);
+		Route::get('/menus/{menu}', [MenuController::class, 'show']);
+		// pelanggan
+		Route::get('/customers', [CustomerController::class, 'index']);
+		Route::get('/customers/{customer}', [CustomerController::class, 'show']);
+		// order
+		Route::apiResource('/orders', OrderController::class);
+		// meja
+		Route::get('/tables', [TableController::class, 'index']);
+		Route::get('/tables/{table}', [TableController::class, 'show']);
+		// transaksi
 		Route::apiResource('transactions', TransactionController::class);
-
-		// Transaction Transaction Details
-		Route::get('/transactions/{transaction}/transaction-details', [
-			TransactionTransactionDetailsController::class,
-			'index',
-		])->name('transactions.transaction-details.index');
-		Route::post('/transactions/{transaction}/transaction-details', [
-			TransactionTransactionDetailsController::class,
-			'store',
-		])->name('transactions.transaction-details.store');
 
 		Route::apiResource(
 			'transaction-details',
 			TransactionDetailController::class
 		);
+	});
 
-		Route::apiResource('types', TypeController::class);
-
-		// Type Menus
-		Route::get('/types/{type}/menus', [
-			TypeMenusController::class,
-			'index',
-		])->name('types.menus.index');
-		Route::post('/types/{type}/menus', [
-			TypeMenusController::class,
-			'store',
-		])->name('types.menus.store');
-
-		Route::apiResource('users', UserController::class);
-
-		// User Transactions
-		Route::get('/users/{user}/transactions', [
-			UserTransactionsController::class,
-			'index',
-		])->name('users.transactions.index');
-		Route::post('/users/{user}/transactions', [
-			UserTransactionsController::class,
-			'store',
-		])->name('users.transactions.store');
+Route::middleware(['auth:api'])
+	->group(function () {
+		Route::post('/logout', [AuthController::class, 'logout']);
 	});

@@ -2,74 +2,63 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Http\Controllers\Controller;
+use App\Http\Requests\UserStoreRequest;
+use App\Http\Requests\UserUpdateRequest;
+use App\Http\Resources\UserCollection;
+use App\Http\Resources\UserResource;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
-use App\Http\Resources\UserResource;
-use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Hash;
-use App\Http\Resources\UserCollection;
-use App\Http\Requests\UserStoreRequest;
-use App\Http\Requests\UserUpdateRequest;
 
-class UserController extends Controller
-{
-    public function index(Request $request): UserCollection
-    {
-        $this->authorize('view-any', User::class);
+class UserController extends Controller {
+	public function index(Request $request): UserCollection {
 
-        $search = $request->get('search', '');
+		$search = $request->get('search', '');
 
-        $users = User::search($search)
-            ->latest()
-            ->paginate();
+		$users = User::search($search)
+			->latest()
+			->paginate();
 
-        return new UserCollection($users);
-    }
+		return new UserCollection($users);
+	}
 
-    public function store(UserStoreRequest $request): UserResource
-    {
-        $this->authorize('create', User::class);
+	public function store(UserStoreRequest $request): UserResource {
 
-        $validated = $request->validated();
+		$validated = $request->validated();
 
-        $validated['password'] = Hash::make($validated['password']);
+		$validated['password'] = Hash::make($validated['password']);
 
-        $user = User::create($validated);
+		$user = User::create($validated);
 
-        return new UserResource($user);
-    }
+		return new UserResource($user);
+	}
 
-    public function show(Request $request, User $user): UserResource
-    {
-        $this->authorize('view', $user);
+	public function show(Request $request, User $user): UserResource {
 
-        return new UserResource($user);
-    }
+		return new UserResource($user);
+	}
 
-    public function update(UserUpdateRequest $request, User $user): UserResource
-    {
-        $this->authorize('update', $user);
+	public function update(UserUpdateRequest $request, User $user): UserResource {
 
-        $validated = $request->validated();
+		$validated = $request->validated();
 
-        if (empty($validated['password'])) {
-            unset($validated['password']);
-        } else {
-            $validated['password'] = Hash::make($validated['password']);
-        }
+		if (empty($validated['password'])) {
+			unset($validated['password']);
+		} else {
+			$validated['password'] = Hash::make($validated['password']);
+		}
 
-        $user->update($validated);
+		$user->update($validated);
 
-        return new UserResource($user);
-    }
+		return new UserResource($user);
+	}
 
-    public function destroy(Request $request, User $user): Response
-    {
-        $this->authorize('delete', $user);
+	public function destroy(Request $request, User $user): Response {
 
-        $user->delete();
+		$user->delete();
 
-        return response()->noContent();
-    }
+		return response()->noContent();
+	}
 }

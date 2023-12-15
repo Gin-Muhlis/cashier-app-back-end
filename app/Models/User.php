@@ -7,16 +7,14 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Passport\HasApiTokens;
-use Spatie\Permission\Traits\HasRoles;
 
 class User extends Authenticatable {
 	use HasApiTokens;
 	use Notifiable;
 	use HasFactory;
 	use Searchable;
-	use HasRoles;
 
-	protected $fillable = ['name', 'address', 'email', 'phone', 'password'];
+	protected $fillable = ['name', 'address', 'email', 'phone', 'password', 'role_id'];
 
 	protected $searchableFields = ['*'];
 
@@ -32,5 +30,13 @@ class User extends Authenticatable {
 
 	public function isSuperAdmin(): bool {
 		return in_array($this->email, config('auth.super_admins'));
+	}
+
+	public function role() {
+		return $this->belongsTo(Role::class);
+	}
+
+	public function getRole() {
+		return $this->role->name;
 	}
 }
