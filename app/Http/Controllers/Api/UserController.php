@@ -15,11 +15,7 @@ use Illuminate\Support\Facades\Hash;
 class UserController extends Controller {
 	public function index(Request $request): UserCollection {
 
-		$search = $request->get('search', '');
-
-		$users = User::search($search)
-			->latest()
-			->paginate();
+		$users = User::all();
 
 		return new UserCollection($users);
 	}

@@ -12,15 +12,15 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 
 class TypeController extends Controller {
-	public function index(Request $request): TypeCollection {
+	public function index(Request $request) {
 
-		$search = $request->get('search', '');
+		$types = Type::all();
 
-		$types = Type::search($search)
-			->latest()
-			->paginate();
-
-		return new TypeCollection($types);
+		$data = new TypeCollection($types);
+		return response()->json([
+			'success' => 'true',
+			'data' => $data,
+		]);
 	}
 
 	public function store(TypeStoreRequest $request): TypeResource {

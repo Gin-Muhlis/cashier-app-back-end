@@ -13,27 +13,34 @@ use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Storage;
 
 class MenuController extends Controller {
-	public function index(Request $request): MenuCollection {
+	public function index(Request $request) {
 
-		$search = $request->get('search', '');
+		$menus = Menu::all();
 
-		$menus = Menu::search($search)
-			->latest()
-			->paginate();
+		$data = new MenuCollection($menus);
 
-		return new MenuCollection($menus);
+		return response()->json([
+			'success' => true,
+			'data' => $data,
+		]);
 	}
 
-	public function store(MenuStoreRequest $request): MenuResource {
+	public function store(MenuStoreRequest $request) {
 
-		$validated = $request->validated();
-		if ($request->hasFile('image')) {
-			$validated['image'] = $request->file('image')->store('public');
+		try {
+			$validated = $request->validated();
+			if ($request->hasFile('image')) {
+				$validated['image'] = $request->file('image')->store('public');
+			}
+
+			$menu = Menu::create($validated);
+
+			return new MenuResource($menu);
+		} catch (Exception $e) {
+			return response()->json([
+				'message' => $e->getMessage(),
+			]);
 		}
-
-		$menu = Menu::create($validated);
-
-		return new MenuResource($menu);
 	}
 
 	public function show(Request $request, Menu $menu): MenuResource {
@@ -41,10 +48,9 @@ class MenuController extends Controller {
 		return new MenuResource($menu);
 	}
 
-	public function update(MenuUpdateRequest $request, Menu $menu): MenuResource {
-
+	public function update(MenuUpdateRequest $request, Menu $menu) {
 		$validated = $request->validated();
-
+		return response()->json(['date' => $validated], 500);
 		if ($request->hasFile('image')) {
 			if ($menu->image) {
 				Storage::delete($menu->image);

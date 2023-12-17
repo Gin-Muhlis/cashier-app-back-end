@@ -12,15 +12,18 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 
 class TableController extends Controller {
-	public function index(Request $request): TableCollection {
+	public function index(Request $request) {
 
 		$search = $request->get('search', '');
 
-		$tables = Table::search($search)
-			->latest()
-			->paginate();
+		$tables = Table::all();
 
-		return new TableCollection($tables);
+		$data = new TableCollection($tables);
+
+		return response()->json([
+			'success' => true,
+			'data' => $data,
+		]);
 	}
 
 	public function store(TableStoreRequest $request): TableResource {

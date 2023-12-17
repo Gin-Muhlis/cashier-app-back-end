@@ -12,15 +12,18 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 
 class CustomerController extends Controller {
-	public function index(Request $request): CustomerCollection {
+	public function index(Request $request) {
 
 		$search = $request->get('search', '');
 
-		$customers = Customer::search($search)
-			->latest()
-			->paginate();
+		$customers = Customer::all();
 
-		return new CustomerCollection($customers);
+		$data = new CustomerCollection($customers);
+
+		return response()->json([
+			'success' => true,
+			'data' => $data,
+		]);
 	}
 
 	public function store(CustomerStoreRequest $request): CustomerResource {

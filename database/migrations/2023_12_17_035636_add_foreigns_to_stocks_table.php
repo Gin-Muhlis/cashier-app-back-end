@@ -9,13 +9,13 @@ return new class extends Migration {
 	 * Run the migrations.
 	 */
 	public function up(): void {
-		Schema::table('users', function (Blueprint $table) {
-			// $table
-			//     ->foreign('role_id')
-			//     ->references('id')
-			//     ->on('roles')
-			//     ->onUpdate('CASCADE')
-			//     ->onDelete('CASCADE');
+		Schema::table('stocks', function (Blueprint $table) {
+			$table
+				->foreign('menu_id')
+				->references('id')
+				->on('menus')
+				->onUpdate('CASCADE')
+				->onDelete('CASCADE');
 		});
 	}
 
@@ -23,8 +23,8 @@ return new class extends Migration {
 	 * Reverse the migrations.
 	 */
 	public function down(): void {
-		Schema::table('users', function (Blueprint $table) {
-			$table->dropForeign(['role_id']);
+		Schema::table('stock', function (Blueprint $table) {
+			//
 		});
 	}
 };
