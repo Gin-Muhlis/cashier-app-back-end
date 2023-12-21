@@ -8,8 +8,11 @@ use App\Http\Requests\TransactionUpdateRequest;
 use App\Http\Resources\TransactionCollection;
 use App\Http\Resources\TransactionResource;
 use App\Models\Transaction;
+use App\Models\TransactionDetail;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
+use Illuminate\Support\Facades\DB;
 
 class TransactionController extends Controller {
 	public function index(Request $request): TransactionCollection {
@@ -23,13 +26,41 @@ class TransactionController extends Controller {
 		return new TransactionCollection($transactions);
 	}
 
-	public function store(TransactionStoreRequest $request): TransactionResource {
+	public function store(TransactionStoreRequest $request) {
 
-		$validated = $request->validated();
+		try {
+			$validated = $request->validated();
+			$validated['date'] = Carbon::now()->format('Y-m-d');
 
-		$transaction = Transaction::create($validated);
+			DB::beginTransaction();
 
-		return new TransactionResource($transaction);
+			$transaction = Transaction::create($validated);
+
+			foreach ($validated['menus'] as $menu) {
+				$data = [
+					'menu_id' => $menu['id'],
+					'quantity' => $menu['quantity'],
+					'sub_total' => $menu['sub_total'],
+					'unit_price' => $menu['unit_price'],
+					'transaction_id' => $transaction->id,
+				];
+
+				TransactionDetail::create($data);
+			}
+
+			DB::commit();
+
+			return response()->json([
+				'success' => true,
+				'message' => 'Transaksi berhasil ditambahkan',
+				'data' => $transaction,
+			]);
+		} catch (Exception $e) {
+			return response()->json([
+				'success' => false,
+				'message' => $e->getMessage(),
+			], 500);
+		}
 	}
 
 	public function show(

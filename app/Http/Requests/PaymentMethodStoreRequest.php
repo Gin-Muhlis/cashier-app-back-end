@@ -4,7 +4,7 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class TransactionStoreRequest extends FormRequest {
+class PaymentMethodStoreRequest extends FormRequest {
 	/**
 	 * Determine if the user is authorized to make this request.
 	 */
@@ -14,14 +14,13 @@ class TransactionStoreRequest extends FormRequest {
 
 	/**
 	 * Get the validation rules that apply to the request.
+	 *
+	 * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
 	 */
 	public function rules(): array {
 		return [
-			'total_payment' => ['required', 'numeric'],
-			'payment_method_id' => ['required', 'exists:payment_methods,id'],
-			'description' => ['required', 'string', 'max:1000'],
-			'user_id' => ['required', 'exists:users,id'],
-			'menus' => ['required', 'array'],
+			'icon' => ['required', 'image', 'max:2048', 'mimes:png'],
+			'name' => ['required', 'string'],
 		];
 	}
 }
