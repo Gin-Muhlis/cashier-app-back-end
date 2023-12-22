@@ -19,8 +19,8 @@ class TransactionStoreRequest extends FormRequest {
 		return [
 			'total_payment' => ['required', 'numeric'],
 			'payment_method_id' => ['required', 'exists:payment_methods,id'],
-			'description' => ['required', 'string', 'max:1000'],
-			'user_id' => ['required', 'exists:users,id'],
+			// 'description' => ['required', 'string', 'max:1000'],
+			// 'user_id' => ['required', 'exists:users,id'],
 			'menus' => ['required', 'array'],
 		];
 	}

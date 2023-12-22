@@ -13,8 +13,6 @@ use Illuminate\Http\Response;
 
 class CategoryController extends Controller {
 	public function index(Request $request) {
-		$search = $request->get('search', '');
-
 		$categories = Category::all();
 
 		$data = new CategoryCollection($categories);

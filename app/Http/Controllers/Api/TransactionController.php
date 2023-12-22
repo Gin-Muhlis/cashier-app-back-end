@@ -31,6 +31,8 @@ class TransactionController extends Controller {
 		try {
 			$validated = $request->validated();
 			$validated['date'] = Carbon::now()->format('Y-m-d');
+			$validated['user_id'] = 1;
+			$validated['description'] = '-';
 
 			DB::beginTransaction();
 
@@ -40,7 +42,7 @@ class TransactionController extends Controller {
 				$data = [
 					'menu_id' => $menu['id'],
 					'quantity' => $menu['quantity'],
-					'sub_total' => $menu['sub_total'],
+					'sub_total' => $menu['quantity'] * $menu['unit_price'],
 					'unit_price' => $menu['unit_price'],
 					'transaction_id' => $transaction->id,
 				];
