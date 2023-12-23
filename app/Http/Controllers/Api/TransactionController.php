@@ -40,9 +40,9 @@ class TransactionController extends Controller {
 
 			foreach ($validated['menus'] as $menu) {
 				$data = [
-					'menu_id' => $menu['id'],
+					'menu_id' => $menu['menu_id'],
 					'quantity' => $menu['quantity'],
-					'sub_total' => $menu['quantity'] * $menu['unit_price'],
+					'sub_total' => $menu['sub_total'],
 					'unit_price' => $menu['unit_price'],
 					'transaction_id' => $transaction->id,
 				];
