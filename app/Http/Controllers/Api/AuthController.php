@@ -3,9 +3,10 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use Auth;
 use Exception;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 
 class AuthController extends Controller {
@@ -44,6 +45,7 @@ class AuthController extends Controller {
 			return response()->json([
 				'success' => true,
 				'token' => $token,
+				'user' => $user,
 			]);
 		} catch (Exception $e) {
 			return response()->json([
@@ -56,17 +58,46 @@ class AuthController extends Controller {
 
 	public function logout(Request $request) {
 		try {
-			$user = $request->user();
-			$user->token()->revoke();
+			if (Auth::guard('api')->check()) {
+				$accessToken = Auth::guard('api')->user()->token();
+				DB::table('oauth_refresh_tokens')
+					->where('access_token_id', $accessToken->id)
+					->update(['revoked' => true]);
+
+				$accessToken->revoke();
+
+				return response()->json([
+					'success' => true,
+					'user' => null,
+					'message' => 'Logout berhasil',
+				]);
+			}
+
 			return response()->json([
-				'success' => true,
-				'message' => 'Logout berhasil',
-			]);
+				'success' => false,
+				'user' => null,
+				'message' => 'Unauthorized',
+			], 401);
 		} catch (Exception $e) {
 			return response()->json([
 				'success' => false,
 				'message' => $e->getMessage(),
 			], 500);
 		}
+	}
+
+	public function profile(Request $request) {
+		if (Auth::guard('api')->check()) {
+			$user = Auth::guard('api')->user();
+
+			return response()->json([
+				'success' => true,
+				'user' => $user,
+			]);
+		}
+		return response()->json([
+			'success' => false,
+			'user' => null,
+		], 401);
 	}
 }

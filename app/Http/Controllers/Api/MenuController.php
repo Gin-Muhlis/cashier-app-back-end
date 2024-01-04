@@ -50,7 +50,6 @@ class MenuController extends Controller {
 
 	public function update(MenuUpdateRequest $request, Menu $menu) {
 		$validated = $request->validated();
-		return response()->json(['date' => $validated], 500);
 		if ($request->hasFile('image')) {
 			if ($menu->image) {
 				Storage::delete($menu->image);
@@ -61,7 +60,12 @@ class MenuController extends Controller {
 
 		$menu->update($validated);
 
-		return new MenuResource($menu);
+		$data = new MenuResource($menu);
+
+		return response()->json([
+			'success' => true,
+			'data' => $data,
+		]);
 	}
 
 	public function destroy(Request $request, Menu $menu): Response {

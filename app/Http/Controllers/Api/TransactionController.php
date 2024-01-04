@@ -7,6 +7,7 @@ use App\Http\Requests\TransactionStoreRequest;
 use App\Http\Requests\TransactionUpdateRequest;
 use App\Http\Resources\TransactionCollection;
 use App\Http\Resources\TransactionResource;
+use App\Models\Stock;
 use App\Models\Transaction;
 use App\Models\TransactionDetail;
 use Carbon\Carbon;
@@ -39,6 +40,8 @@ class TransactionController extends Controller {
 			$transaction = Transaction::create($validated);
 
 			foreach ($validated['menus'] as $menu) {
+				$stock = Stock::whereMenuId($menu['menu_id']);
+				$stok->update(['amount', $stock->amount - $menu['quantity']]);
 				$data = [
 					'menu_id' => $menu['menu_id'],
 					'quantity' => $menu['quantity'],
