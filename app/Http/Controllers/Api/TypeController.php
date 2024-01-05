@@ -23,13 +23,16 @@ class TypeController extends Controller {
 		]);
 	}
 
-	public function store(TypeStoreRequest $request): TypeResource {
+	public function store(TypeStoreRequest $request) {
 
 		$validated = $request->validated();
 
 		$type = Type::create($validated);
 
-		return new TypeResource($type);
+		return response()->json([
+			'success' => true,
+			'message' => 'Jenis berhasil ditambahkan',
+		]);
 	}
 
 	public function show(Request $request, Type $type): TypeResource {
@@ -37,19 +40,28 @@ class TypeController extends Controller {
 		return new TypeResource($type);
 	}
 
-	public function update(TypeUpdateRequest $request, Type $type): TypeResource {
+	public function update(TypeUpdateRequest $request, Type $type) {
 
 		$validated = $request->validated();
 
 		$type->update($validated);
 
-		return new TypeResource($type);
+		$updatedType = new TypeResource($type);
+
+		return response()->json([
+			'success' => true,
+			'message' => 'Jenis berhasil diupdate',
+			'data' => $updatedType,
+		]);
 	}
 
-	public function destroy(Request $request, Type $type): Response {
+	public function destroy(Request $request, Type $type) {
 
 		$type->delete();
 
-		return response()->noContent();
+		return response()->json([
+			'success' => true,
+			'message' => 'Jenis berhasil dihapus',
+		]);
 	}
 }

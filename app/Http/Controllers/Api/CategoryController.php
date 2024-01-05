@@ -41,19 +41,28 @@ class CategoryController extends Controller {
 	public function update(
 		CategoryUpdateRequest $request,
 		Category $category
-	): CategoryResource {
+	) {
 
 		$validated = $request->validated();
 
 		$category->update($validated);
 
-		return new CategoryResource($category);
+		$updated_category = new CategoryResource($category);
+
+		return response()->json([
+			'success' => true,
+			'message' => 'Kategori berhasil diupdate',
+			'data' => $updated_category,
+		]);
 	}
 
-	public function destroy(Request $request, Category $category): Response {
+	public function destroy(Request $request, Category $category) {
 
 		$category->delete();
 
-		return response()->noContent();
+		return response()->json([
+			'success' => true,
+			'message' => 'Kategori berhasil dihapus',
+		]);
 	}
 }
