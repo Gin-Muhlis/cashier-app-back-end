@@ -26,13 +26,16 @@ class TableController extends Controller {
 		]);
 	}
 
-	public function store(TableStoreRequest $request): TableResource {
+	public function store(TableStoreRequest $request) {
 
 		$validated = $request->validated();
 
 		$table = Table::create($validated);
 
-		return new TableResource($table);
+		return response()->json([
+			'success' => true,
+			'message' => 'Meja berhasil ditambahkan',
+		]);
 	}
 
 	public function show(Request $request, Table $table): TableResource {
@@ -43,19 +46,25 @@ class TableController extends Controller {
 	public function update(
 		TableUpdateRequest $request,
 		Table $table
-	): TableResource {
+	) {
 
 		$validated = $request->validated();
 
 		$table->update($validated);
 
-		return new TableResource($table);
+		return response()->json([
+			'success' => true,
+			'message' => 'Meja berhasil diupdate',
+		]);
 	}
 
-	public function destroy(Request $request, Table $table): Response {
+	public function destroy(Request $request, Table $table) {
 
 		$table->delete();
 
-		return response()->noContent();
+		return response()->json([
+			'success' => true,
+			'message' => 'Meja berhasil dihapus',
+		]);
 	}
 }

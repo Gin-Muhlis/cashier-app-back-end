@@ -26,13 +26,16 @@ class CustomerController extends Controller {
 		]);
 	}
 
-	public function store(CustomerStoreRequest $request): CustomerResource {
+	public function store(CustomerStoreRequest $request) {
 
 		$validated = $request->validated();
 
 		$customer = Customer::create($validated);
 
-		return new CustomerResource($customer);
+		return response()->json([
+			'success' => true,
+			'message' => 'Pelanggan berhasil ditambahkan',
+		]);
 	}
 
 	public function show(Request $request, Customer $customer): CustomerResource {
@@ -43,19 +46,25 @@ class CustomerController extends Controller {
 	public function update(
 		CustomerUpdateRequest $request,
 		Customer $customer
-	): CustomerResource {
+	) {
 
 		$validated = $request->validated();
 
 		$customer->update($validated);
 
-		return new CustomerResource($customer);
+		return response()->json([
+			'success' => true,
+			'message' => 'Pelanggan berhasil diupdate',
+		]);
 	}
 
-	public function destroy(Request $request, Customer $customer): Response {
+	public function destroy(Request $request, Customer $customer) {
 
 		$customer->delete();
 
-		return response()->noContent();
+		return response()->json([
+			'success' => true,
+			'message' => 'Pelanggan berhasil dihapus',
+		]);
 	}
 }

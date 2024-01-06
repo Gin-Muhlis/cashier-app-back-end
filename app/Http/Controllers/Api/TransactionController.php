@@ -33,15 +33,14 @@ class TransactionController extends Controller {
 			$validated = $request->validated();
 			$validated['date'] = Carbon::now()->format('Y-m-d');
 			$validated['user_id'] = 1;
-			$validated['description'] = '-';
 
 			DB::beginTransaction();
 
 			$transaction = Transaction::create($validated);
 
 			foreach ($validated['menus'] as $menu) {
-				$stock = Stock::whereMenuId($menu['menu_id']);
-				$stok->update(['amount', $stock->amount - $menu['quantity']]);
+				$stock = Stock::where('menu_id', $menu['menu_id'])->first();
+				$stock->update(['amount' => $stock->amount - $menu['quantity']]);
 				$data = [
 					'menu_id' => $menu['menu_id'],
 					'quantity' => $menu['quantity'],

@@ -35,7 +35,10 @@ class MenuController extends Controller {
 
 			$menu = Menu::create($validated);
 
-			return new MenuResource($menu);
+			return response()->json([
+				'success' => true,
+				'message' => 'Menu berhasil ditambahkan',
+			]);
 		} catch (Exception $e) {
 			return response()->json([
 				'message' => $e->getMessage(),
@@ -64,11 +67,11 @@ class MenuController extends Controller {
 
 		return response()->json([
 			'success' => true,
-			'data' => $data,
+			'message' => 'Menu berhasil diupdate',
 		]);
 	}
 
-	public function destroy(Request $request, Menu $menu): Response {
+	public function destroy(Request $request, Menu $menu) {
 
 		if ($menu->image) {
 			Storage::delete($menu->image);
@@ -76,6 +79,9 @@ class MenuController extends Controller {
 
 		$menu->delete();
 
-		return response()->noContent();
+		return response()->json([
+			'success' => true,
+			'message' => 'Menu berhasil dihapus',
+		]);
 	}
 }

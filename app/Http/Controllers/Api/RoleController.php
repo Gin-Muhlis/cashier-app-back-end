@@ -5,33 +5,35 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\RoleCollection;
 use App\Http\Resources\RoleResource;
+use App\Models\Role;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
-use Spatie\Permission\Models\Permission;
-use Spatie\Permission\Models\Role;
 
 class RoleController extends Controller {
-	public function index(Request $request): RoleCollection {
+	public function index(Request $request) {
 
-		$search = $request->get('search', '');
-		$roles = Role::where('name', 'like', "%{$search}%")->paginate();
+		$roles = Role::latest()->get();
 
-		return new RoleCollection($roles);
+		$data = new RoleCollection($roles);
+
+		return response()->json([
+			'success' => true,
+			'data' => $data,
+		]);
 	}
 
-	public function store(Request $request): RoleResource {
+	public function store(Request $request) {
 
 		$validated = $this->validate($request, [
 			'name' => 'required|unique:roles|max:32',
-			'permissions' => 'array',
 		]);
 
 		$role = Role::create($validated);
 
-		$permissions = Permission::find($request->permissions);
-		$role->syncPermissions($permissions);
-
-		return new RoleResource($role);
+		return response()->json([
+			'success' => true,
+			'message' => 'Role berhasil ditambahkan',
+		]);
 	}
 
 	public function show(Role $role): RoleResource {
@@ -39,25 +41,28 @@ class RoleController extends Controller {
 		return new RoleResource($role);
 	}
 
-	public function update(Request $request, Role $role): RoleResource {
+	public function update(Request $request, Role $role) {
 
 		$validated = $this->validate($request, [
 			'name' => 'required|max:32|unique:roles,name,' . $role->id,
-			'permissions' => 'array',
 		]);
 
-		$role->update($validated);
+		$updatedRole = $role->update($validated);
 
-		$permissions = Permission::find($request->permissions);
-		$role->syncPermissions($permissions);
-
-		return new RoleResource($role);
+		return response()->json([
+			'success' => true,
+			'message' => 'Role berhasil diupdate',
+			'data' => $updatedRole,
+		]);
 	}
 
-	public function destroy(Role $role): Response {
+	public function destroy(Role $role) {
 
 		$role->delete();
 
-		return response()->noContent();
+		return response()->json([
+			'success' => true,
+			'message' => 'Role berhasil dihapus',
+		]);
 	}
 }

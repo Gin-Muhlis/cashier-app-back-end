@@ -24,13 +24,16 @@ class StockController extends Controller {
 		]);
 	}
 
-	public function store(StockStoreRequest $request): StockResource {
+	public function store(StockStoreRequest $request) {
 
 		$validated = $request->validated();
 
 		$stock = Stock::create($validated);
 
-		return new StockResource($stock);
+		return response()->json([
+			'success' => true,
+			'message' => 'Stok berhasil ditambahkan',
+		]);
 	}
 
 	public function show(Request $request, Stock $stock): StockResource {
@@ -41,19 +44,25 @@ class StockController extends Controller {
 	public function update(
 		StockUpdateRequest $request,
 		Stock $stock
-	): StockResource {
+	) {
 
 		$validated = $request->validated();
 
 		$stock->update($validated);
 
-		return new StockResource($stock);
+		return response()->json([
+			'success' => true,
+			'message' => 'Stok berhasil diupdate',
+		]);
 	}
 
-	public function destroy(Request $request, Stock $stock): Response {
+	public function destroy(Request $request, Stock $stock) {
 
 		$stock->delete();
 
-		return response()->noContent();
+		return response()->json([
+			'success' => true,
+			'message' => 'Stok berhasil dihapus',
+		]);
 	}
 }
