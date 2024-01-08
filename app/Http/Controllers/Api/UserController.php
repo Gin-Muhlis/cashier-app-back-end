@@ -20,7 +20,7 @@ class UserController extends Controller {
 		return new UserCollection($users);
 	}
 
-	public function store(UserStoreRequest $request): UserResource {
+	public function store(UserStoreRequest $request) {
 
 		$validated = $request->validated();
 
@@ -28,7 +28,10 @@ class UserController extends Controller {
 
 		$user = User::create($validated);
 
-		return new UserResource($user);
+		return response()->json([
+			'success' => true,
+			'message' => 'User berhasil ditambahkan',
+		]);
 	}
 
 	public function show(Request $request, User $user): UserResource {
@@ -36,7 +39,7 @@ class UserController extends Controller {
 		return new UserResource($user);
 	}
 
-	public function update(UserUpdateRequest $request, User $user): UserResource {
+	public function update(UserUpdateRequest $request, User $user) {
 
 		$validated = $request->validated();
 
@@ -48,13 +51,19 @@ class UserController extends Controller {
 
 		$user->update($validated);
 
-		return new UserResource($user);
+		return response()->json([
+			'success' => true,
+			'message' => 'User berhasil diupdate',
+		]);
 	}
 
-	public function destroy(Request $request, User $user): Response {
+	public function destroy(Request $request, User $user) {
 
 		$user->delete();
 
-		return response()->noContent();
+		return response()->json([
+			'success' => true,
+			'message' => 'User berhasil dihapus',
+		]);
 	}
 }

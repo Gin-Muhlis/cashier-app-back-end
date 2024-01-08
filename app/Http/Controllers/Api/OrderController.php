@@ -12,24 +12,28 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 
 class OrderController extends Controller {
-	public function index(Request $request): OrderCollection {
+	public function index(Request $request) {
 
-		$search = $request->get('search', '');
+		$orders = Order::all();
 
-		$orders = Order::search($search)
-			->latest()
-			->paginate();
+		$data = new OrderCollection($orders);
 
-		return new OrderCollection($orders);
+		return response()->json([
+			'success' => true,
+			'data' => $data,
+		]);
 	}
 
-	public function store(OrderStoreRequest $request): OrderResource {
+	public function store(OrderStoreRequest $request) {
 
 		$validated = $request->validated();
 
 		$order = Order::create($validated);
 
-		return new OrderResource($order);
+		return response()->json([
+			'success' => true,
+			'message' => 'Pemesanan berhasil ditambahkan',
+		]);
 	}
 
 	public function show(Request $request, Order $order): OrderResource {
@@ -40,19 +44,25 @@ class OrderController extends Controller {
 	public function update(
 		OrderUpdateRequest $request,
 		Order $order
-	): OrderResource {
+	) {
 
 		$validated = $request->validated();
 
 		$order->update($validated);
 
-		return new OrderResource($order);
+		return response()->json([
+			'success' => true,
+			'message' => 'Pemesanan berhasil diupdate',
+		]);
 	}
 
-	public function destroy(Request $request, Order $order): Response {
+	public function destroy(Request $request, Order $order) {
 
 		$order->delete();
 
-		return response()->noContent();
+		return response()->json([
+			'success' => true,
+			'message' => 'Pemesanan berhasil dihapus',
+		]);
 	}
 }

@@ -14,23 +14,22 @@ use Illuminate\Http\Response;
 class TransactionDetailController extends Controller {
 	public function index(Request $request): TransactionDetailCollection {
 
-		$search = $request->get('search', '');
-
-		$transactionDetails = TransactionDetail::search($search)
-			->latest()
-			->paginate();
+		$transactionDetails = TransactionDetail::all();
 
 		return new TransactionDetailCollection($transactionDetails);
 	}
 
 	public function store(
 		TransactionDetailStoreRequest $request
-	): TransactionDetailResource {
+	) {
 		$validated = $request->validated();
 
 		$transactionDetail = TransactionDetail::create($validated);
 
-		return new TransactionDetailResource($transactionDetail);
+		return response()->json([
+			'success' => true,
+			'message' => 'Detail Transaksi berhasil ditambahkan',
+		]);
 	}
 
 	public function show(
@@ -44,21 +43,27 @@ class TransactionDetailController extends Controller {
 	public function update(
 		TransactionDetailUpdateRequest $request,
 		TransactionDetail $transactionDetail
-	): TransactionDetailResource {
+	) {
 		$validated = $request->validated();
 
 		$transactionDetail->update($validated);
 
-		return new TransactionDetailResource($transactionDetail);
+		return response()->json([
+			'success' => true,
+			'message' => 'Detail Transaksi berhasil diupdate',
+		]);
 	}
 
 	public function destroy(
 		Request $request,
 		TransactionDetail $transactionDetail
-	): Response {
+	) {
 
 		$transactionDetail->delete();
 
-		return response()->noContent();
+		return response()->json([
+			'success' => true,
+			'message' => 'Detail Transaksi berhasil dihapus',
+		]);
 	}
 }

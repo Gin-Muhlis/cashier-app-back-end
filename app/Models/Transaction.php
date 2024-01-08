@@ -13,7 +13,6 @@ class Transaction extends Model {
 	protected $fillable = [
 		'date',
 		'total_payment',
-
 		'payment_method_id',
 		'description',
 		'user_id',
@@ -31,5 +30,9 @@ class Transaction extends Model {
 
 	public function user() {
 		return $this->belongsTo(User::class);
+	}
+
+	public function paymentMethod() {
+		return $this->belongsTo(paymentMethod::class);
 	}
 }

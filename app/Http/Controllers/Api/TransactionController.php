@@ -18,11 +18,7 @@ use Illuminate\Support\Facades\DB;
 class TransactionController extends Controller {
 	public function index(Request $request): TransactionCollection {
 
-		$search = $request->get('search', '');
-
-		$transactions = Transaction::search($search)
-			->latest()
-			->paginate();
+		$transactions = Transaction::all();
 
 		return new TransactionCollection($transactions);
 	}
@@ -78,22 +74,28 @@ class TransactionController extends Controller {
 	public function update(
 		TransactionUpdateRequest $request,
 		Transaction $transaction
-	): TransactionResource {
+	) {
 
 		$validated = $request->validated();
 
 		$transaction->update($validated);
 
-		return new TransactionResource($transaction);
+		return response()->json([
+			'success' => true,
+			'message' => 'Transaksi berhasil diupdate',
+		]);
 	}
 
 	public function destroy(
 		Request $request,
 		Transaction $transaction
-	): Response {
+	) {
 
 		$transaction->delete();
 
-		return response()->noContent();
+		return response()->json([
+			'success' => true,
+			'message' => 'Transaksi berhasil dihapus',
+		]);
 	}
 }
