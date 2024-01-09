@@ -13,6 +13,7 @@ use App\Http\Controllers\Api\TransactionController;
 use App\Http\Controllers\Api\TransactionDetailController;
 use App\Http\Controllers\Api\TypeController;
 use App\Http\Controllers\Api\UserController;
+use App\Http\Controllers\ReportController;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware(['cors', 'json.response'])->group(function () {
@@ -126,4 +127,6 @@ Route::middleware(['cors', 'json.response'])->group(function () {
 	Route::apiResource('customers', CustomerController::class);
 	// transaksi
 	Route::post('/transactions', [TransactionController::class, 'store']);
+	// laporan
+	Route::get('/stock-report', [ReportController::class, 'stockReport']);
 });
