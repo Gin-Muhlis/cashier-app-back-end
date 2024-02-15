@@ -18,7 +18,7 @@ use Illuminate\Support\Facades\Route;
 
 Route::middleware(['cors', 'json.response'])->group(function () {
 	// login
-	// Route::post('/auth/login', [AuthController::class, 'login']);
+	Route::post('/auth/login', [AuthController::class, 'login']);
 
 	// Route::middleware('')->group(function () {
 	// 	// logout
