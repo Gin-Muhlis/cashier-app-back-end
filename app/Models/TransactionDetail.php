@@ -15,6 +15,7 @@ class TransactionDetail extends Model {
 		'unit_price',
 		'quantity',
 		'menu_id',
+		'entrusted_product_id',
 		'transaction_id',
 	];
 

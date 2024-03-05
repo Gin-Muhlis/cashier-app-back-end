@@ -137,4 +137,5 @@ Route::middleware(['cors', 'json.response'])->group(function () {
 	Route::post('/transactions', [TransactionController::class, 'store']);
 	// laporan
 	Route::get('/stock-report', [ReportController::class, 'stockReport']);
+	Route::get('/report/entrusted-products', [ReportController::class, 'entrustedProductReport']);
 });

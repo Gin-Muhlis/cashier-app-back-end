@@ -39,8 +39,7 @@ class TransactionController extends Controller {
 
             foreach ( $validated[ 'menus' ] as $menu ) {
                 if ( !$menu[ 'isEntrusted' ] ) {
-                    $stock = Stock::where( 'menu_id', $menu[ 'menu_id' ] )->first();
-                    $stock->update( [ 'amount' => $stock->amount - $menu[ 'quantity' ] ] );
+
                     $data = [
                         'menu_id' => $menu[ 'menu_id' ],
                         'quantity' => $menu[ 'quantity' ],
@@ -50,22 +49,23 @@ class TransactionController extends Controller {
                     ];
 
                     TransactionDetail::create( $data );
-                }
-				
-				if ($menu[ 'isEntrusted' ]) {
-					$data = [
-                        'entrusted_id' => $menu[ 'menu_id' ],
+                    $stock = Stock::where( 'menu_id', $menu[ 'menu_id' ] )->first();
+                    $stock->update( [ 'amount' => $stock->amount - $menu[ 'quantity' ] ] );
+                } else  {
+					$dataProduct = [
+                        'entrusted_product_id' => $menu[ 'menu_id' ],
                         'quantity' => $menu[ 'quantity' ],
                         'sub_total' => $menu[ 'sub_total' ],
                         'unit_price' => $menu[ 'unit_price' ],
                         'transaction_id' => $transaction->id,
                     ];
 
-					TransactionDetail::create( $data );
+					TransactionDetail::create( $dataProduct );
 
 					$product = EntrustedProduct::find($menu['menu_id']);
 
 					$product->update([...$product->toArray(), 'stock' => $product->stock - $menu[ 'quantity' ]]);
+                    
 				}
             }
 
