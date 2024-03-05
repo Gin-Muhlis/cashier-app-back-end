@@ -14,7 +14,8 @@ return new class extends Migration {
 			$table->double('sub_total');
 			$table->double('unit_price');
 			$table->integer('quantity');
-			$table->unsignedBigInteger('menu_id');
+			$table->unsignedBigInteger('menu_id')->nullable();
+			$table->unsignedBigInteger('entrusted_product_id')->nullable();
 			$table->unsignedBigInteger('transaction_id');
 
 			$table->timestamps();
