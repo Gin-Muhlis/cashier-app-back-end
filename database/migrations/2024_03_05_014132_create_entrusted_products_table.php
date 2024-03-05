@@ -11,14 +11,14 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('entrusted_products', function (Blueprint $table) {
-            $table->bigIncrements('id');
-            $table->string('product_name');
-            $table->string('supplier_name');
-            $table->float('purchase_price');
-            $table->float('sell_price');
-            $table->text('description');
-
+        Schema::create('produk_titipan', function (Blueprint $table) {
+            $table->id();
+            $table->string('nama_produk');
+            $table->string('nama_supplier');
+            $table->decimal('harga_beli', 10, 2);
+            $table->decimal('harga_jual', 10, 2);
+            $table->integer('stok');
+            $table->text('keterangan')->nullable();
             $table->timestamps();
         });
     }

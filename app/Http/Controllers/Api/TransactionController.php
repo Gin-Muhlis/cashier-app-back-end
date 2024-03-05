@@ -7,95 +7,116 @@ use App\Http\Requests\TransactionStoreRequest;
 use App\Http\Requests\TransactionUpdateRequest;
 use App\Http\Resources\TransactionCollection;
 use App\Http\Resources\TransactionResource;
+use App\Models\EntrustedProduct;
+use App\Models\Menu;
 use App\Models\Stock;
 use App\Models\Transaction;
 use App\Models\TransactionDetail;
 use Carbon\Carbon;
+use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\DB;
 
 class TransactionController extends Controller {
-	public function index(Request $request): TransactionCollection {
+    public function index( Request $request ): TransactionCollection {
 
-		$transactions = Transaction::all();
+        $transactions = Transaction::all();
 
-		return new TransactionCollection($transactions);
-	}
+        return new TransactionCollection( $transactions );
+    }
 
-	public function store(TransactionStoreRequest $request) {
+    public function store( TransactionStoreRequest $request ) {
 
-		try {
-			$validated = $request->validated();
-			$validated['date'] = Carbon::now()->format('Y-m-d');
-			$validated['user_id'] = 1;
+        try {
+            $validated = $request->validated();
+            $validated[ 'date' ] = Carbon::now()->format( 'Y-m-d' );
+            $validated[ 'user_id' ] = 1;
 
-			DB::beginTransaction();
+            DB::beginTransaction();
 
-			$transaction = Transaction::create($validated);
+            $transaction = Transaction::create( $validated );
 
-			foreach ($validated['menus'] as $menu) {
-				$stock = Stock::where('menu_id', $menu['menu_id'])->first();
-				$stock->update(['amount' => $stock->amount - $menu['quantity']]);
-				$data = [
-					'menu_id' => $menu['menu_id'],
-					'quantity' => $menu['quantity'],
-					'sub_total' => $menu['sub_total'],
-					'unit_price' => $menu['unit_price'],
-					'transaction_id' => $transaction->id,
-				];
+            foreach ( $validated[ 'menus' ] as $menu ) {
+                if ( !$menu[ 'isEntrusted' ] ) {
+                    $stock = Stock::where( 'menu_id', $menu[ 'menu_id' ] )->first();
+                    $stock->update( [ 'amount' => $stock->amount - $menu[ 'quantity' ] ] );
+                    $data = [
+                        'menu_id' => $menu[ 'menu_id' ],
+                        'quantity' => $menu[ 'quantity' ],
+                        'sub_total' => $menu[ 'sub_total' ],
+                        'unit_price' => $menu[ 'unit_price' ],
+                        'transaction_id' => $transaction->id,
+                    ];
 
-				TransactionDetail::create($data);
-			}
+                    TransactionDetail::create( $data );
+                }
+				
+				if ($menu[ 'isEntrusted' ]) {
+					$data = [
+                        'entrusted_id' => $menu[ 'menu_id' ],
+                        'quantity' => $menu[ 'quantity' ],
+                        'sub_total' => $menu[ 'sub_total' ],
+                        'unit_price' => $menu[ 'unit_price' ],
+                        'transaction_id' => $transaction->id,
+                    ];
 
-			DB::commit();
+					TransactionDetail::create( $data );
 
-			return response()->json([
-				'success' => true,
-				'message' => 'Transaksi berhasil ditambahkan',
-				'data' => $transaction,
-			]);
-		} catch (Exception $e) {
-			return response()->json([
-				'success' => false,
-				'message' => $e->getMessage(),
-			], 500);
-		}
-	}
+					$product = EntrustedProduct::find($menu['menu_id']);
 
-	public function show(
-		Request $request,
-		Transaction $transaction
-	): TransactionResource {
+					$product->update([...$product->toArray(), 'stock' => $product->stock - $menu[ 'quantity' ]]);
+				}
+            }
 
-		return new TransactionResource($transaction);
-	}
+            DB::commit();
 
-	public function update(
-		TransactionUpdateRequest $request,
-		Transaction $transaction
-	) {
+            return response()->json( [
+                'success' => true,
+                'message' => 'Transaksi berhasil ditambahkan',
+                'data' => $transaction,
+            ] );
+        } catch ( Exception $e ) {
+            return response()->json( [
+                'success' => false,
+                'message' => $e->getMessage(),
+            ], 500 );
+        }
+    }
 
-		$validated = $request->validated();
+    public function show(
+        Request $request,
+        Transaction $transaction
+    ): TransactionResource {
 
-		$transaction->update($validated);
+        return new TransactionResource( $transaction );
+    }
 
-		return response()->json([
-			'success' => true,
-			'message' => 'Transaksi berhasil diupdate',
-		]);
-	}
+    public function update(
+        TransactionUpdateRequest $request,
+        Transaction $transaction
+    ) {
 
-	public function destroy(
-		Request $request,
-		Transaction $transaction
-	) {
+        $validated = $request->validated();
 
-		$transaction->delete();
+        $transaction->update( $validated );
 
-		return response()->json([
-			'success' => true,
-			'message' => 'Transaksi berhasil dihapus',
-		]);
-	}
+        return response()->json( [
+            'success' => true,
+            'message' => 'Transaksi berhasil diupdate',
+        ] );
+    }
+
+    public function destroy(
+        Request $request,
+        Transaction $transaction
+    ) {
+
+        $transaction->delete();
+
+        return response()->json( [
+            'success' => true,
+            'message' => 'Transaksi berhasil dihapus',
+        ] );
+    }
 }

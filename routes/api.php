@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\CategoryController;
 use App\Http\Controllers\Api\CustomerController;
 use App\Http\Controllers\Api\HomeController;
@@ -13,6 +14,7 @@ use App\Http\Controllers\Api\TransactionController;
 use App\Http\Controllers\Api\TransactionDetailController;
 use App\Http\Controllers\Api\TypeController;
 use App\Http\Controllers\Api\UserController;
+use App\Http\Controllers\EntrustedProductController;
 use App\Http\Controllers\ReportController;
 use Illuminate\Support\Facades\Route;
 
@@ -79,6 +81,8 @@ Route::middleware(['cors', 'json.response'])->group(function () {
 	// 		Route::post('/transactions', [TransactionController::class, 'store']);
 	// 	});
 	// });
+
+
 	Route::get('/data-home', [HomeController::class, 'index']);
 	// kategori
 	Route::apiResource('/categories', CategoryController::class);
@@ -88,6 +92,10 @@ Route::middleware(['cors', 'json.response'])->group(function () {
 	Route::apiResource('users', UserController::class);
 	// stok
 	Route::apiResource('stocks', StockController::class);
+	Route::apiResource('entrusted-products', EntrustedProductController::class);
+	Route::get('export-product', [EntrustedProductController::class, 'exportPdf']);
+	Route::post('import-products', [EntrustedProductController::class, 'importExcel']);
+
 	// jenis pembayaran
 	Route::apiResource('payment_methods', PaymentMethodController::class);
 	// jenis

@@ -8,4 +8,10 @@ use Illuminate\Database\Eloquent\Model;
 class EntrustedProduct extends Model
 {
     use HasFactory;
+
+    protected $fillable = ['product_name', 'supplier_name', 'purchase_price', 'sell_price', 'stock', 'description'];
+
+    public function transactionDetails() {
+        return $this->hasMany(TransactionDetail::class);
+    }
 }
